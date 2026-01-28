@@ -11,7 +11,6 @@ const downloadBtn = document.getElementById('downloadBtn');
 let qrisStaticCode = localStorage.getItem('qrisStaticCode') || '';
 if (qrisStaticCode) displayMerchantInfo(qrisStaticCode);
 
-// Toggle Buttons
 document.querySelectorAll('.btn-toggle').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
@@ -22,7 +21,6 @@ document.querySelectorAll('.btn-toggle').forEach(btn => {
   });
 });
 
-// Quick Amounts
 document.querySelectorAll('.btn-chip').forEach(button => {
   button.addEventListener('click', () => {
     const val = button.getAttribute('data-amount');
@@ -95,8 +93,7 @@ qrisForm.addEventListener('submit', (e) => {
   const result = `${prefix}${nominalData}${tax}5802ID${suffix}`;
   const finalQR = result + convertCRC16(result);
 
-  // REVISED: Balanced Size (180px vs old 220px)
-  new QRCode(qrcodeElement, { text: finalQR, width: 180, height: 180 });
+  new QRCode(qrcodeElement, { text: finalQR, width: 400, height: 400 });
   
   setTimeout(() => {
     wrapper.classList.add('active');
