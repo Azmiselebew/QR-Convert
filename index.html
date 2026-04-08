@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Convert | Azmi Signature</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.3.1/dist/jsQR.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#050505] text-white">
+
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <div id="smooth-wrapper">
+    <div id="smooth-content" class="min-h-screen flex flex-col items-center justify-center py-20 px-4 md:px-0">
+      
+      <header class="header mb-16 text-center reveal-anim">
+        <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-2">
+          QR<span class="text-blue-500">-CONVERT</span>
+        </h1>
+        <p class="text-white/40 uppercase tracking-[0.4em] text-[10px] md:text-xs font-bold">
+          High-Precision Conversion Platform.
+        </p>
+      </header>
+
+      <main class="main-card w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-10 reveal-anim shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <div class="upload-wrapper mb-8 relative z-10">
+          <label for="qrisImageInput" class="btn-upload group flex items-center justify-center gap-3 w-full border border-white/20 hover:border-blue-500 text-white py-4 rounded-full uppercase tracking-widest text-xs font-bold cursor-pointer transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:text-blue-500 transition-colors"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Static QRIS
+          </label>
+          <input type="file" id="qrisImageInput" class="hidden" accept="image/*">
+          <canvas id="qrisCanvas" class="hidden"></canvas>
+        </div>
+
+        <div id="merchantInfo" class="merchant-badge hidden mb-8 border-l-4 border-blue-500 bg-blue-500/10 p-4 rounded-r-lg"></div>
+
+        <form id="qrisForm" class="space-y-8 relative z-10">
+          <div>
+            <label class="block text-white/40 uppercase text-[10px] tracking-[0.3em] font-bold mb-3">Transaction Amount</label>
+            <input type="text" id="amountInput" class="w-full bg-transparent border-b border-white/20 focus:border-blue-500 outline-none py-3 text-2xl font-bold transition-colors" placeholder="IDR 0" required>
+            <input type="hidden" id="realAmountInput">
+            <div class="flex gap-2 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+              <button type="button" class="btn-chip border border-white/20 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all shrink-0" data-amount="10000">10k</button>
+              <button type="button" class="btn-chip border border-white/20 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all shrink-0" data-amount="20000">20k</button>
+              <button type="button" class="btn-chip border border-white/20 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all shrink-0" data-amount="50000">50k</button>
+              <button type="button" class="btn-chip border border-white/20 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all shrink-0" data-amount="100000">100k</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-white/40 uppercase text-[10px] tracking-[0.3em] font-bold mb-3">Add Service Fee?</label>
+            <div class="flex gap-4">
+              <button type="button" class="btn-toggle flex-1 border border-white/20 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all active-toggle" data-value="n">No</button>
+              <button type="button" class="btn-toggle flex-1 border border-white/20 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all" data-value="y">Yes</button>
+            </div>
+            <input type="hidden" id="serviceFee" value="n">
+          </div>
+
+          <div id="feeOptionsWrapper" class="hidden space-y-6 border-t border-white/10 pt-6">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-white/40 uppercase text-[10px] tracking-[0.3em] font-bold mb-3">Type</label>
+                <select id="feeType" class="w-full bg-transparent border-b border-white/20 focus:border-blue-500 outline-none py-2 text-sm font-bold appearance-none">
+                  <option value="r" class="bg-[#0a0a0a]">Fixed (IDR)</option>
+                  <option value="p" class="bg-[#0a0a0a]">Percent (%)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-white/40 uppercase text-[10px] tracking-[0.3em] font-bold mb-3">Fee Value</label>
+                <input type="number" id="feeValue" class="w-full bg-transparent border-b border-white/20 focus:border-blue-500 outline-none py-2 text-sm font-bold" placeholder="0">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 mt-4">
+            Generate Dynamic QRIS
+          </button>
+        </form>
+
+        <section id="resultArea" class="hidden mt-12 pt-12 border-t border-white/10 text-center opacity-0">
+          <div class="qr-wrapper relative flex justify-center items-center min-h-[200px]">
+            <div id="qrPlaceholder" class="absolute w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center z-10 transition-all duration-700">
+              <span class="text-white font-black text-xs">QR</span>
+            </div>
+            <div id="qrcode" class="bg-white p-3 rounded-xl opacity-0 scale-50 transition-all duration-700 border-2 border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.3)] inline-block"></div>
+          </div>
+          
+          <button id="downloadBtn" class="hidden mx-auto mt-8 items-center gap-2 border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download QR
+          </button>
+          <p class="text-white/40 text-[10px] uppercase tracking-widest font-bold mt-6">Scan to process payment</p>
+        </section>
+      </main>
+
+      <footer class="mt-16 text-center text-white/20 uppercase tracking-[0.4em] text-[8px] font-bold">
+        © 2026 Azmi Akmal Alfikr.
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; cursor: none; overflow-x: hidden; }
+
+/* CUSTOM CURSOR */
+#cursor { width: 8px; height: 8px; background: white; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; }
+#cursor-follower { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; }
+
+/* TOGGLE BUTTONS ACTIVE STATE */
+.btn-toggle.active-toggle { background: white; color: black; border-color: white; }
+
+/* CUSTOM SCROLLBAR FOR CHIPS */
+.custom-scrollbar::-webkit-scrollbar { height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.8); }
+
+/* QR ANIMATION CLASSES */
+.qr-wrapper.active #qrPlaceholder { transform: scale(0); opacity: 0; }
+.qr-wrapper.active #qrcode { opacity: 1; transform: scale(1); }
+
+/* VISIBILITY TRANSITION */
+.fade-in { display: block !important; animation: fadeIn 0.8s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* MOBILE RESPONSIVE FIX (HIDE CURSOR) */
+@media (max-width: 768px) {
+    #cursor, #cursor-follower { display: none !important; }
+    body, label, button, a, select, input { cursor: auto !important; }
+}
